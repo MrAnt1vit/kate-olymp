@@ -1,29 +1,28 @@
 #include <iostream>
 #include <vector>
 
-// Подсчитать неупорядоченные пары разных памятников на расстоянии > limit.
-// Координаты во входе строго возрастают.
+// «Город Че»: законченная версия наброска с внешним for из конца занятия.
+// Считаем пары на расстоянии <= x, затем вычитаем их из числа всех пар.
+// Отличие от экрана: счётчики пар имеют тип long long.
 int main() {
     int n;
-    long long limit;
-    std::cin >> n >> limit;
-    std::vector<long long> position(n);
-    for (auto& value : position) {
-        std::cin >> value;
+    long long x;
+    std::cin >> n >> x;
+    std::vector<long long> a(n);
+    for (int i = 0; i < n; ++i) std::cin >> a[i];
+
+    int r = 0;
+    long long diff = 0;
+    long long near_pairs = 0;
+    for (int l = 0; l < n; ++l) {
+        if (l != 0) diff -= a[l] - a[l - 1];
+        while (diff <= x && r < n) {
+            ++r;
+            if (r != n) diff += a[r] - a[r - 1];
+        }
+        near_pairs += r - l - 1;
     }
 
-    long long answer = 0;
-    int right = 1;
-    for (int left = 0; left < n; ++left) {
-        if (right <= left) {
-            right = left + 1;
-        }
-        while (right < n && position[right] - position[left] <= limit) {
-            ++right;
-        }
-        // Все позиции от right до n-1 находятся достаточно далеко.
-        answer += n - right;
-    }
-
-    std::cout << answer << '\n';
+    long long all_pairs = 1LL * n * (n - 1) / 2;
+    std::cout << all_pairs - near_pairs << '\n';
 }

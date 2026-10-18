@@ -1,39 +1,32 @@
 #include <climits>
 #include <iostream>
+#include <vector>
 
-// Максимальная сумма непустого подотрезка. При равной сумме выбираем
-// минимальный правый индекс, затем максимальный левый. Индексы с 1.
+// Рабочая версия алгоритма, который писали на занятии.
+// Сохранены p, imin, ibest, jbest и порядок проверок в одном цикле.
 int main() {
     int n;
     std::cin >> n;
+    std::vector<long long> a(n), p(n + 1, 0);
 
-    long long prefix = 0;
-    long long min_prefix = 0;
-    int min_index = 0;  // prefix[0] — сумма пустого префикса.
-
+    int imin = 0;
+    int ibest = 0, jbest = 0;
     long long best_sum = LLONG_MIN;
-    int best_left = 1;
-    int best_right = 1;
 
-    for (int right = 1; right <= n; ++right) {
-        long long value;
-        std::cin >> value;
-        prefix += value;
+    for (int j = 0; j < n; ++j) {
+        std::cin >> a[j];
+        p[j + 1] = p[j] + a[j];
 
-        const long long candidate = prefix - min_prefix;
-        // При равенстве оставляем прежний ответ: его правая граница меньше.
+        // Включаем p[j], но ещё не p[j+1]: отрезок должен быть непустым.
+        if (p[j] <= p[imin]) imin = j;
+
+        long long candidate = p[j + 1] - p[imin];
         if (candidate > best_sum) {
             best_sum = candidate;
-            best_left = min_index + 1;
-            best_right = right;
-        }
-
-        // При равных минимумах выбираем более поздний индекс начала.
-        if (prefix <= min_prefix) {
-            min_prefix = prefix;
-            min_index = right;
+            ibest = imin;
+            jbest = j;
         }
     }
 
-    std::cout << best_left << ' ' << best_right << '\n';
+    std::cout << ibest + 1 << ' ' << jbest + 1 << '\n';
 }
